@@ -59,6 +59,7 @@ class Message(object):
 
         self.headers = {}
         self.body = ""
+        self.raw_json = None
 
     def get_message(self):
         query_string = {'token': self.token, 'msgid': self.id}
@@ -71,6 +72,7 @@ class Message(object):
         if data.get('error', False):
             if data.get('error').lower() is "rate limiter reached":
                 raise RateLimiterReached
+        self.raw_json = data
         self.headers = data.get('data').get('headers')
         self.body = "".join([part['body'] for part in data['data']['parts']])
 
