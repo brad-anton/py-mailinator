@@ -61,14 +61,18 @@ class Message(object):
         self.body = ""
         self.raw_json = None
 
-    def get_message(self):
+    def get_message(self, clean_response=True):
         query_string = {'token': self.token, 'msgid': self.id}
         url = self._baseURL + "?" + urlencode(query_string)
         request = get_request(url)
         if request.getcode() == 404:
             raise MessageNotFound
         response = request.read()
-        data = json.loads(clean_response(response), strict=False)
+        if clean_response:
+            data = json.loads(clean_response(response), strict=False)
+        else:
+            data = json.loads(response, strict=False)
+
         if data.get('error', False):
             if data.get('error').lower() is "rate limiter reached":
                 raise RateLimiterReached
